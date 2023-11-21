@@ -34,6 +34,7 @@ private:
     std::function<float(std::vector<float>)> nodefunction_prime;
     std::vector<float> nodeinput;
     float nodeoutput;
+    float bias = 0;
 
 public:
     Node();
@@ -41,12 +42,13 @@ public:
     void setnodefuction_prime(const std::function<float(std::vector<float>)> &nodefunctionprime);
     void runnodefunction();
     void clear_input();
+    void setbias(float value);
 };
 
 class Edge {
     friend class Network;
 private:
-    float weight;
+    float weight = 0;
     std::array<int, 4> connectionarray;
     std::function<float(float, float)> edgefunction;
     std::function<float(float, float)> edgefunction_primeweight;

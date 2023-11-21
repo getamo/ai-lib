@@ -66,12 +66,16 @@ void Node::setnodefuction_prime(const std::function<float(std::vector<float>)> &
     nodefunction_prime = nodefunctionprime;
 }
 void Node::runnodefunction(){
+    nodeinput.push_back(bias);
     nodeoutput = nodefunction(nodeinput);
+    nodeinput.pop_back();
 }
 void Node::clear_input(){
     nodeinput.clear();
 }
-
+void Node::setbias(float value){
+    bias = value;
+}
 
 
 Edge::Edge(){}
@@ -205,6 +209,7 @@ void Network::create_node(int layerpos, int startpos, unsigned int endpos
 , std::function<float(std::vector<float>)> nodefunction, std::function<float(std::vector<float>)> nodefunction_prime){
     for (auto i = startpos; i < endpos; i++ ){
         Node innode(nodefunction);
+        innode.setbias(0);
         innode.setnodefuction_prime(nodefunction_prime);
         nodespace[layerpos].insert({i, innode});
     }
@@ -314,6 +319,7 @@ void Network::stochastic_backpropagate(std::vector<float> targetvector, float le
         float target = targetvector[i];
         Node currentnode = nodespace[currentx][currenty];
         float input_gradient = currentnode.nodefunction_prime(currentnode.nodeinput) * cost_prime(target, currentnode.nodeoutput);
+        nodespace[currentx][currenty].setbias(currentnode.bias - (learning_rate*input_gradient));
         //find weight gradient of each edge
         for (const auto & currentedgepos: outgroup_edgespace[currentx][currenty]){
             Edge currentedge = edgespace[currentedgepos.first][currentedgepos.second];
@@ -324,7 +330,6 @@ void Network::stochastic_backpropagate(std::vector<float> targetvector, float le
             nodes_to_process.push({connectionarray[2], connectionarray[0]});
             //update weight
             edgespace[currentedgepos.first][currentedgepos.second].setweight(currentedge.weight - (learning_rate*weight_gradient));
-
         }
     }
     //hidden layer
@@ -348,6 +353,7 @@ void Network::stochastic_backpropagate(std::vector<float> targetvector, float le
             output_gradient += previous_gradient;
         }
         float input_gradient = currentnode.nodefunction_prime(currentnode.nodeinput) * output_gradient;
+        nodespace[currentx][currenty].setbias(currentnode.bias - (learning_rate*input_gradient));
         for (auto & currentedgepos: outgroup_edgespace[currentx][currenty]){
             Edge currentedge = edgespace[currentedgepos.first][currentedgepos.second];
             std::array<int, 4> connectionarray = currentedge.connectionarray;
