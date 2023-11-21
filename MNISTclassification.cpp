@@ -5,8 +5,8 @@
 
 int main() {
     //prepare training data
-    const std::string MNIST_IMAGES_FILE = "C:\\Users\\User\\projects\\aiproject\\train-images.idx3-ubyte";
-    const std::string MNIST_LABELS_FILE = "C:\\Users\\User\\projects\\aiproject\\train-labels.idx1-ubyte";
+    const std::string MNIST_IMAGES_FILE = "your\\directory";
+    const std::string MNIST_LABELS_FILE = "your\\directory";
     std::vector<std::vector<float>> mnistData = readMNISTImages(MNIST_IMAGES_FILE);
     std::vector<std::vector<float>> mnistLabels = readMNISTLabels(MNIST_LABELS_FILE);
     
